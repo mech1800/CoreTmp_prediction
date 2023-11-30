@@ -186,5 +186,5 @@ for config in configs:
         file.write(f'Train MAE Loss: {train_mae_loss}\n')
         file.write(f'Validation MSE Loss: {val_mse_loss}\n')
         file.write(f'Validation MAE Loss: {val_mae_loss}\n')
-        file.write(f'Test MSE Loss: {test_mse_loss}\n\n')
+        file.write(f'Test MSE Loss: {test_mse_loss}\n')
         file.write(f'Test MAE Loss: {test_mae_loss}\n')
