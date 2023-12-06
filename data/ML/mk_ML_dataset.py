@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 
 # Attempting to read the CSV file
-data = pd.read_csv('../dataset_tskin_5mm_10mm.csv', header=None, encoding='ISO-8859-1')
+data = pd.read_csv('../dataset_20231205.csv', header=None, encoding='ISO-8859-1')
 
 # Find the column indices for T_core, T_skin and T_sen
 labels = data.iloc[4].values
