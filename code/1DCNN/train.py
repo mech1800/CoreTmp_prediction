@@ -7,6 +7,10 @@ import numpy as np
 import optuna
 import matplotlib.pyplot as plt
 
+def torch_mean_relative_error(y_true, y_pred):
+    relative_errors = torch.abs((y_true - y_pred) / y_true)
+    return torch.mean(relative_errors)
+
 configs = [[2,61,'60_sequence/single_feature'],
            [2,61,'60_sequence/normalized_single_feature'],
            [6,60,'60_sequence/normalized_multi_feature'],
@@ -78,7 +82,7 @@ for config in configs:
 
     # Optunaでのハイパーパラメータチューニング実行
     study = optuna.create_study(direction='minimize')
-    study.optimize(objective, n_trials=10)  # トライアル数は少なめに設定
+    study.optimize(objective, n_trials=100)
     best_params = study.best_params
 
 
@@ -151,40 +155,53 @@ for config in configs:
         # 学習
         train_mse_loss = 0
         train_mae_loss = 0
+        train_mre_loss = 0
         for inputs, labels in train_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             train_mse_loss += MSE(outputs, labels).item()
             train_mae_loss += MAE(outputs, labels).item()
+            train_mre_loss += torch_mean_relative_error(outputs, labels).item()
         train_mse_loss /= len(train_loader)
         train_mae_loss /= len(train_loader)
+        train_mre_loss /= len(train_loader)
 
         # 検証
         val_mse_loss = 0
         val_mae_loss = 0
+        val_mre_loss = 0
         for inputs, labels in val_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             val_mse_loss += MSE(outputs, labels).item()
             val_mae_loss += MAE(outputs, labels).item()
+            val_mre_loss += torch_mean_relative_error(outputs, labels).item()
         val_mse_loss /= len(val_loader)
         val_mae_loss /= len(val_loader)
+        val_mre_loss /= len(val_loader)
 
         # テスト
         test_mse_loss = 0
         test_mae_loss = 0
+        test_mre_loss = 0
         for inputs, labels in test_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             test_mse_loss += MSE(outputs, labels).item()
+            test_mae_loss += MAE(outputs, labels).item()
+            test_mre_loss += torch_mean_relative_error(outputs, labels).item()
         test_mse_loss /= len(test_loader)
         test_mae_loss /= len(test_loader)
+        test_mre_loss /= len(test_loader)
 
     # 損失をテキストファイルに書き出す
     with open(directory+'/best_model_performance.txt', 'w') as file:
-        file.write(f'Train MSE Loss: {train_mse_loss}\n')
-        file.write(f'Train MAE Loss: {train_mae_loss}\n')
-        file.write(f'Validation MSE Loss: {val_mse_loss}\n')
-        file.write(f'Validation MAE Loss: {val_mae_loss}\n')
-        file.write(f'Test MSE Loss: {test_mse_loss}\n')
-        file.write(f'Test MAE Loss: {test_mae_loss}\n')
+        file.write(f'Train MSE: {train_mse_loss}\n')
+        file.write(f'Train MAE: {train_mae_loss}\n')
+        file.write(f'Train MRE: {train_mre_loss}\n')
+        file.write(f'Val MSE: {val_mse_loss}\n')
+        file.write(f'Val MAE: {val_mae_loss}\n')
+        file.write(f'Val MRE: {val_mre_loss}\n')
+        file.write(f'Test MSE: {test_mse_loss}\n')
+        file.write(f'Test MAE: {test_mae_loss}\n')
+        file.write(f'Test MRE: {test_mre_loss}\n')

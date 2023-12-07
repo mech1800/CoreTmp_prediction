@@ -5,10 +5,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import pickle
 
+def mean_relative_error(y_true, y_pred):
+    relative_errors = np.abs((y_true - y_pred) / y_true)
+    return np.mean(relative_errors)
+
 configs = [['60_sequence/single_feature'],
+           ['60_sequence/multi_feature'],
            ['60_sequence/normalized_single_feature'],
            ['60_sequence/normalized_multi_feature'],
            ['10_sequence/single_feature'],
+           ['10_sequence/multi_feature'],
            ['10_sequence/normalized_single_feature'],
            ['10_sequence/normalized_multi_feature']]
 
@@ -54,7 +60,7 @@ for config in configs:
 
     # Optunaによるハイパーパラメータチューニング
     study = optuna.create_study(direction='minimize')
-    study.optimize(objective, n_trials=10)
+    study.optimize(objective, n_trials=100)
 
 
     # 最適なパラメータでモデルの再トレーニング
@@ -79,11 +85,18 @@ for config in configs:
     val_mae = mean_absolute_error(val_T_core, val_pred)
     test_mae = mean_absolute_error(test_T_core, test_pred)
 
+    train_mre = mean_relative_error(train_T_core, train_pred)
+    val_mre = mean_relative_error(val_T_core, val_pred)
+    test_mre = mean_relative_error(test_T_core, test_pred)
+
     # 結果をファイルに書き出す
     with open(directory+'/best_model_performance.txt', 'w') as file:
         file.write(f'Train MSE: {train_mse}\n')
-        file.write(f'Val MSE: {val_mse}\n')
-        file.write(f'Test MSE: {test_mse}\n')
         file.write(f'Train MAE: {train_mae}\n')
+        file.write(f'Train MRE: {train_mre}\n')
+        file.write(f'Val MSE: {val_mse}\n')
         file.write(f'Val MAE: {val_mae}\n')
+        file.write(f'Val MRE: {val_mre}\n')
+        file.write(f'Test MSE: {test_mse}\n')
         file.write(f'Test MAE: {test_mae}\n')
+        file.write(f'Test MRE: {test_mre}\n')
