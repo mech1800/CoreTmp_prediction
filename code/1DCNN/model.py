@@ -8,6 +8,7 @@ class DynamicCNN(nn.Module):
         layers = []
         for _ in range(num_layers):
             layers.append(nn.Conv1d(input_dim, hidden_dim, kernel_size=kernel_size, padding=kernel_size // 2))
+            layers.append(nn.BatchNorm1d(hidden_dim))
             layers.append(nn.ReLU())
             input_dim = hidden_dim  # 次の層の入力チャネル数を更新
 
