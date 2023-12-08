@@ -11,9 +11,9 @@ def torch_mean_relative_error(y_true, y_pred):
     relative_errors = torch.abs((y_true - y_pred) / y_true)
     return torch.mean(relative_errors)
 
-configs = [[2,'60_sequence/single_feature'],
-           [2,'60_sequence/normalized_single_feature'],
-           [6,'60_sequence/normalized_multi_feature'],
+configs = [[2,'all_sequence/single_feature'],
+           [2,'all_sequence/normalized_single_feature'],
+           [6,'all_sequence/normalized_multi_feature'],
            [2,'10_sequence/single_feature'],
            [2,'10_sequence/normalized_single_feature'],
            [6,'10_sequence/normalized_multi_feature']]

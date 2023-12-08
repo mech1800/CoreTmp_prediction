@@ -9,8 +9,8 @@ def mean_relative_error(y_true, y_pred):
     relative_errors = np.abs((y_true - y_pred) / y_true)
     return np.mean(relative_errors)
 
-configs = [['60_sequence/normalized_single_feature'],
-           ['60_sequence/normalized_multi_feature'],
+configs = [['all_sequence/normalized_single_feature'],
+           ['all_sequence/normalized_multi_feature'],
            ['10_sequence/normalized_single_feature'],
            ['10_sequence/normalized_multi_feature']]
 

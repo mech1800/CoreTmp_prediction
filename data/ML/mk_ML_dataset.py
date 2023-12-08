@@ -12,18 +12,18 @@ t_sen_index = np.where(labels == 'T_sen, T2 (degC)')[0][0]
 t_core_index = np.where(labels == '% T_body (degC)')[0][0]
 
 # Calculate the number of time series data samples
-n_samples = (len(data) - 5) // 61
+n_samples = (len(data) - 5) // 181
 
 
-# ****************************** for 60_sequence ******************************
+# ****************************** for all_sequence ******************************
 # ******************** single_feature ********************
-T_input = np.zeros((n_samples, 2, 61), dtype=np.float32)
+T_input = np.zeros((n_samples, 2, 181), dtype=np.float32)
 T_core = np.zeros(n_samples, dtype=np.float32)
 
 # Process each time series data sample
 for i in tqdm(range(n_samples)):
-    start_row = 5 + i * 61
-    end_row = start_row + 61
+    start_row = 5 + i * 181
+    end_row = start_row + 181
 
     # Extract T_core for the first row
     T_core[i] = float(data.iloc[start_row, t_core_index])
@@ -36,22 +36,22 @@ for i in tqdm(range(n_samples)):
     T_input[i, 0, :] = T_skin
     T_input[i, 1, :] = T_sen
 
-# Transpose T_input to get the shape (n_samples, 61*2)
+# Transpose T_input to get the shape (n_samples, 181*2)
 T_input = T_input.reshape(n_samples, -1)
 
 # Save the datasets
-np.save('60_sequence/single_feature/T_input.npy', T_input)
-np.save('60_sequence/single_feature/T_core.npy', T_core)
+np.save('all_sequence/single_feature/T_input.npy', T_input)
+np.save('all_sequence/single_feature/T_core.npy', T_core)
 
 
 # ******************** normalized_single_feature ********************
-T_input = np.zeros((n_samples, 2, 61), dtype=np.float32)
+T_input = np.zeros((n_samples, 2, 181), dtype=np.float32)
 T_core = np.zeros(n_samples, dtype=np.float32)
 
 # Process each time series data sample
 for i in tqdm(range(n_samples)):
-    start_row = 5 + i * 61
-    end_row = start_row + 61
+    start_row = 5 + i * 181
+    end_row = start_row + 181
 
     # Extract T_core for the first row
     T_core[i] = float(data.iloc[start_row, t_core_index])
@@ -64,22 +64,22 @@ for i in tqdm(range(n_samples)):
     T_input[i, 0, :] = (T_skin - np.min(T_skin)) / (np.max(T_skin) - np.min(T_skin))
     T_input[i, 1, :] = (T_sen - np.min(T_sen)) / (np.max(T_sen) - np.min(T_sen))
 
-# Transpose T_input to get the shape (n_samples, 61*2)
+# Transpose T_input to get the shape (n_samples, 181*2)
 T_input = T_input.reshape(n_samples, -1)
 
 # Save the datasets
-np.save('60_sequence/normalized_single_feature/T_input.npy', T_input)
-np.save('60_sequence/normalized_single_feature/T_core.npy', T_core)
+np.save('all_sequence/normalized_single_feature/T_input.npy', T_input)
+np.save('all_sequence/normalized_single_feature/T_core.npy', T_core)
 
 
 # ******************** multi_feature ********************
-T_input = np.zeros((n_samples, 6, 60), dtype=np.float32)
+T_input = np.zeros((n_samples, 6, 180), dtype=np.float32)
 T_core = np.zeros(n_samples, dtype=np.float32)
 
 # Process each time series data sample
 for i in tqdm(range(n_samples)):
-    start_row = 5 + i * 61
-    end_row = start_row + 61
+    start_row = 5 + i * 181
+    end_row = start_row + 181
 
     # Extract T_core for the first row
     T_core[i] = float(data.iloc[start_row, t_core_index])
@@ -102,22 +102,22 @@ for i in tqdm(range(n_samples)):
     T_input[i, 4, :] = T_skin_sen
     T_input[i, 5, :] = T_skin_sen_diff
 
-# Transpose T_input to get the shape (n_samples, 60*6)
+# Transpose T_input to get the shape (n_samples, 180*6)
 T_input = T_input.reshape(n_samples, -1)
 
 # Save the datasets
-np.save('60_sequence/multi_feature/T_input.npy', T_input)
-np.save('60_sequence/multi_feature/T_core.npy', T_core)
+np.save('all_sequence/multi_feature/T_input.npy', T_input)
+np.save('all_sequence/multi_feature/T_core.npy', T_core)
 
 
 # ******************** normalized_multi_feature ********************
-T_input = np.zeros((n_samples, 6, 60), dtype=np.float32)
+T_input = np.zeros((n_samples, 6, 180), dtype=np.float32)
 T_core = np.zeros(n_samples, dtype=np.float32)
 
 # Process each time series data sample
 for i in tqdm(range(n_samples)):
-    start_row = 5 + i * 61
-    end_row = start_row + 61
+    start_row = 5 + i * 181
+    end_row = start_row + 181
 
     # Extract T_core for the first row
     T_core[i] = float(data.iloc[start_row, t_core_index])
@@ -140,12 +140,12 @@ for i in tqdm(range(n_samples)):
     T_input[i, 4, :] = (T_skin_sen - np.min(T_skin_sen)) / (np.max(T_skin_sen) - np.min(T_skin_sen))
     T_input[i, 5, :] = (T_skin_sen_diff - np.min(T_skin_sen_diff)) / (np.max(T_skin_sen_diff) - np.min(T_skin_sen_diff))
 
-# Transpose T_input to get the shape (n_samples, 60*6)
+# Transpose T_input to get the shape (n_samples, 180*6)
 T_input = T_input.reshape(n_samples, -1)
 
 # Save the datasets
-np.save('60_sequence/normalized_multi_feature/T_input.npy', T_input)
-np.save('60_sequence/normalized_multi_feature/T_core.npy', T_core)
+np.save('all_sequence/normalized_multi_feature/T_input.npy', T_input)
+np.save('all_sequence/normalized_multi_feature/T_core.npy', T_core)
 
 
 # ****************************** for 10_sequence ******************************
@@ -155,7 +155,7 @@ T_core = np.zeros(n_samples, dtype=np.float32)
 
 # Process each time series data sample
 for i in tqdm(range(n_samples)):
-    start_row = 5 + i * 61
+    start_row = 5 + i * 181
     end_row = start_row + 10
 
     # Extract T_core for the first row
@@ -183,7 +183,7 @@ T_core = np.zeros(n_samples, dtype=np.float32)
 
 # Process each time series data sample
 for i in tqdm(range(n_samples)):
-    start_row = 5 + i * 61
+    start_row = 5 + i * 181
     end_row = start_row + 10
 
     # Extract T_core for the first row
@@ -211,7 +211,7 @@ T_core = np.zeros(n_samples, dtype=np.float32)
 
 # Process each time series data sample
 for i in tqdm(range(n_samples)):
-    start_row = 5 + i * 61
+    start_row = 5 + i * 181
     end_row = start_row + 11
 
     # Extract T_core for the first row
@@ -249,7 +249,7 @@ T_core = np.zeros(n_samples, dtype=np.float32)
 
 # Process each time series data sample
 for i in tqdm(range(n_samples)):
-    start_row = 5 + i * 61
+    start_row = 5 + i * 181
     end_row = start_row + 11
 
     # Extract T_core for the first row
@@ -273,7 +273,7 @@ for i in tqdm(range(n_samples)):
     T_input[i, 4, :] = (T_skin_sen - np.min(T_skin_sen)) / (np.max(T_skin_sen) - np.min(T_skin_sen))
     T_input[i, 5, :] = (T_skin_sen_diff - np.min(T_skin_sen_diff)) / (np.max(T_skin_sen_diff) - np.min(T_skin_sen_diff))
 
-# Transpose T_input to get the shape (n_samples, 60*6)
+# Transpose T_input to get the shape (n_samples, 180*6)
 T_input = T_input.reshape(n_samples, -1)
 
 # Save the datasets
