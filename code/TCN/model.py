@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn.utils import weight_norm
 
+# https://github.com/locuslab/TCN/blob/master/TCN/tcn.py
 class Chomp1d(nn.Module):
     def __init__(self, chomp_size):
         super(Chomp1d, self).__init__()
@@ -53,7 +54,7 @@ class DynamicTCN(nn.Module):
             dilation_size = 2 ** i
             layers.append(TemporalBlock(input_dim, hidden_dim, kernel_size, stride=1, dilation=dilation_size, padding=(kernel_size-1) * dilation_size, dropout=dropout_rate))
             layers.append(nn.BatchNorm1d(hidden_dim))
-            layers.append(nn.ReLU())
+            # layers.append(nn.ReLU())
             input_dim = hidden_dim
 
         self.tcn_layers = nn.Sequential(*layers)

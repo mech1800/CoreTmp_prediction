@@ -64,7 +64,6 @@ for config in configs:
 
     # デバイスの設定
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    device = torch.device("cpu")
 
     # データセットの取得
     T_input = np.load('../../data/CNN/'+directory+'/T_input.npy')
