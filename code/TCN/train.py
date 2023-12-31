@@ -157,52 +157,67 @@ for config in configs:
         train_mse_loss = 0
         train_mae_loss = 0
         train_mre_loss = 0
+        all_outputs = []
         for inputs, labels in train_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             train_mse_loss += MSE(outputs, labels).item()
             train_mae_loss += MAE(outputs, labels).item()
             train_mre_loss += torch_mean_relative_error(outputs, labels).item()
+            all_outputs.append(outputs.detach())
         train_mse_loss /= len(train_loader)
         train_mae_loss /= len(train_loader)
         train_mre_loss /= len(train_loader)
+        all_outputs = torch.cat(all_outputs)
+        train_std = torch.std(all_outputs)
 
         # 検証
         val_mse_loss = 0
         val_mae_loss = 0
         val_mre_loss = 0
+        all_outputs = []
         for inputs, labels in val_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             val_mse_loss += MSE(outputs, labels).item()
             val_mae_loss += MAE(outputs, labels).item()
             val_mre_loss += torch_mean_relative_error(outputs, labels).item()
+            all_outputs.append(outputs.detach())
         val_mse_loss /= len(val_loader)
         val_mae_loss /= len(val_loader)
         val_mre_loss /= len(val_loader)
+        all_outputs = torch.cat(all_outputs)
+        val_std = torch.std(all_outputs)
 
         # テスト
         test_mse_loss = 0
         test_mae_loss = 0
         test_mre_loss = 0
+        all_outputs = []
         for inputs, labels in test_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             test_mse_loss += MSE(outputs, labels).item()
             test_mae_loss += MAE(outputs, labels).item()
             test_mre_loss += torch_mean_relative_error(outputs, labels).item()
+            all_outputs.append(outputs.detach())
         test_mse_loss /= len(test_loader)
         test_mae_loss /= len(test_loader)
         test_mre_loss /= len(test_loader)
+        all_outputs = torch.cat(all_outputs)
+        test_std = torch.std(all_outputs)
 
     # 損失をテキストファイルに書き出す
     with open(directory+'/best_model_performance.txt', 'w') as file:
         file.write(f'Train MSE: {train_mse_loss}\n')
         file.write(f'Train MAE: {train_mae_loss}\n')
         file.write(f'Train MRE: {train_mre_loss}\n')
+        file.write(f'Train STD: {train_std}\n')
         file.write(f'Val MSE: {val_mse_loss}\n')
         file.write(f'Val MAE: {val_mae_loss}\n')
         file.write(f'Val MRE: {val_mre_loss}\n')
+        file.write(f'Val STD: {val_std}\n')
         file.write(f'Test MSE: {test_mse_loss}\n')
         file.write(f'Test MAE: {test_mae_loss}\n')
         file.write(f'Test MRE: {test_mre_loss}\n')
+        file.write(f'Test STD: {test_std}\n')
