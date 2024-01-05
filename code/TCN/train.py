@@ -18,8 +18,6 @@ configs = [[2,181,'all_sequence/single_feature'],
            [2,10,'10_sequence/normalized_single_feature'],
            [6,10,'10_sequence/normalized_multi_feature']]
 
-configs = [[2,181,'all_sequence/normalized_single_feature']]
-
 for config in configs:
     channel = config[0]
     sequence_length = config[1]
