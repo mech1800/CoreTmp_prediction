@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader, random_split
 import numpy as np
 import optuna
 import matplotlib.pyplot as plt
+import pickle
 
 def torch_mean_relative_error(y_true, y_pred):
     relative_errors = torch.abs((y_true - y_pred) / y_true)
@@ -64,6 +65,7 @@ for config in configs:
 
     # デバイスの設定
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:1")
 
     # データセットの取得
     T_input = np.load('../../data/CNN/'+directory+'/T_input.npy')
@@ -78,6 +80,14 @@ for config in configs:
     val_size = int(0.1 * n_samples)
     test_size = n_samples - train_size - val_size
     train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size])
+
+    # 学習データ、検証データ、テストデータを保存しておく
+    with open(directory + '/train_T_input.pkl', 'wb') as f:
+        pickle.dump(train_dataset, f)
+    with open(directory + '/val_T_input.pkl', 'wb') as f:
+        pickle.dump(val_dataset, f)
+    with open(directory + '/test_T_input.pkl', 'wb') as f:
+        pickle.dump(test_dataset, f)
 
     # Optunaでのハイパーパラメータチューニング実行
     study = optuna.create_study(direction='minimize')

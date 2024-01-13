@@ -58,6 +58,14 @@ for config in configs:
     train_T_input, val_T_input, train_T_core, val_T_core = train_test_split(T_input, T_core, test_size=0.2, random_state=1, shuffle=True)
     val_T_input, test_T_input, val_T_core, test_T_core = train_test_split(val_T_input, val_T_core, test_size=0.5, random_state=1, shuffle=True)
 
+    # 学習データ、検証データ、テストデータを保存しておく
+    np.save(directory + '/train_T_input.npy', train_T_input)
+    np.save(directory + '/train_T_core.npy', train_T_core)
+    np.save(directory + '/val_T_input.npy', val_T_input)
+    np.save(directory + '/val_T_core.npy', val_T_core)
+    np.save(directory + '/test_T_input.npy', test_T_input)
+    np.save(directory + '/test_T_core.npy', test_T_core)
+
     # Optunaによるハイパーパラメータチューニング
     study = optuna.create_study(direction='minimize')
     study.optimize(objective, n_trials=100)
@@ -69,7 +77,7 @@ for config in configs:
     model.fit(train_T_input, train_T_core)
 
     # モデルを保存
-    with open(directory + '/best_model.pth', 'wb') as file:
+    with open(directory + '/best_model.pkl', 'wb') as file:
         pickle.dump(model, file)
 
     # 各データセットに対するMSEとMAEの計算
