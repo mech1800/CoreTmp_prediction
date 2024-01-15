@@ -79,39 +79,3 @@ for config in configs:
     # モデルを保存
     with open(directory + '/best_model.pkl', 'wb') as file:
         pickle.dump(model, file)
-
-    # 各データセットに対するMSEとMAEの計算
-    train_pred = model.predict(train_T_input)
-    val_pred = model.predict(val_T_input)
-    test_pred = model.predict(test_T_input)
-
-    train_mse = mean_squared_error(train_T_core, train_pred)
-    val_mse = mean_squared_error(val_T_core, val_pred)
-    test_mse = mean_squared_error(test_T_core, test_pred)
-
-    train_mae = mean_absolute_error(train_T_core, train_pred)
-    val_mae = mean_absolute_error(val_T_core, val_pred)
-    test_mae = mean_absolute_error(test_T_core, test_pred)
-
-    train_mre = mean_relative_error(train_T_core, train_pred)
-    val_mre = mean_relative_error(val_T_core, val_pred)
-    test_mre = mean_relative_error(test_T_core, test_pred)
-
-    train_std = np.std(train_T_core - train_pred)
-    val_std = np.std(val_T_core - val_pred)
-    test_std = np.std(test_T_core - test_pred)
-
-    # 結果をファイルに書き出す
-    with open(directory+'/best_model_performance.txt', 'w') as file:
-        file.write(f'Train MSE: {train_mse}\n')
-        file.write(f'Train MAE: {train_mae}\n')
-        file.write(f'Train MRE: {train_mre}\n')
-        file.write(f'Train STD: {train_std}\n')
-        file.write(f'Val MSE: {val_mse}\n')
-        file.write(f'Val MAE: {val_mae}\n')
-        file.write(f'Val MRE: {val_mre}\n')
-        file.write(f'Val STD: {val_std}\n')
-        file.write(f'Test MSE: {test_mse}\n')
-        file.write(f'Test MAE: {test_mae}\n')
-        file.write(f'Test MRE: {test_mre}\n')
-        file.write(f'Test STD: {test_std}\n')

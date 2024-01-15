@@ -93,6 +93,8 @@ for config in configs:
     study = optuna.create_study(direction='minimize')
     study.optimize(objective, n_trials=100)
     best_params = study.best_params
+    with open(directory + '/best_params.pkl', 'wb') as f:
+        pickle.dump(best_params, f)
 
 
     # 最適なパラメータでモデルの再トレーニング
