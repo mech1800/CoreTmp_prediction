@@ -63,7 +63,7 @@ plt.title('Model MAE with 2SD', fontsize=18)
 plt.ylabel('MAE', fontsize=14)
 
 # y軸の範囲を設定
-plt.ylim(-1.5, 2.5)
+plt.ylim(-1.5, 2.7)
 
 # x軸を点線で表示
 plt.axhline(0, linestyle='--', color='gray')  # x軸を点線で描画
