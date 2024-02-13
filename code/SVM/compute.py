@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import pickle
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import json
@@ -30,10 +31,28 @@ for i, config in enumerate(configs):
     with open(directory + '/best_model.pkl', 'rb') as file:
         model = pickle.load(file)
 
-    # 各データセットに対するMSE、MAE、MRE、STDの計算
+    # 各データセットに対する学習済みモデルの出力
     train_pred = model.predict(train_T_input)
     val_pred = model.predict(val_T_input)
     test_pred = model.predict(test_T_input)
+
+    # データを目視確認ができるようにcsvファイルに出力
+    reshaped_pred = train_pred.reshape(-1,1)
+    reshaped_core = train_T_core.reshape(-1,1)
+    train_data = np.concatenate([train_T_input, reshaped_pred, reshaped_core], axis=1)
+    reshaped_pred = val_pred.reshape(-1,1)
+    reshaped_core = val_T_core.reshape(-1,1)
+    val_data = np.concatenate([val_T_input, reshaped_pred, reshaped_core], axis=1)
+    reshaped_pred = test_pred.reshape(-1,1)
+    reshaped_core = test_T_core.reshape(-1,1)
+    test_data = np.concatenate([test_T_input, reshaped_pred, reshaped_core], axis=1)
+    data = [train_data, val_data, test_data]
+    names = ['/train_data.csv', '/val_data.csv', '/test_data.csv']
+    for j in range(3):
+        columns = ['input'] + ['' for _ in range(data[j].shape[1]-3)] + ['output', 'label']
+        df = pd.DataFrame(data[j], columns=columns)
+        csv_file_path = directory + names[j]
+        df.to_csv(csv_file_path, index=True, index_label='No')
 
     # 各データセットに対するMSE、MAE、MRE、STDの計算
     performance_metrics = {
@@ -74,7 +93,7 @@ for i, config in enumerate(configs):
     plt.text(np.max(means), mean_diff - 1.96 * std_diff, '-1.96 SD', verticalalignment='bottom', horizontalalignment='right', color='red', fontsize=12)
     plt.xlabel("Mean of Model's prediction and True label", fontsize=14)
     plt.ylabel("Difference between Model's prediction and True label", fontsize=14)
-    plt.title('Bland-Altman-Plot LightGBM×feature'+str(i), fontsize=16)
+    plt.title('Bland-Altman-Plot SVM-'+str(i+1), fontsize=16)
     plt.grid(True)
 
     plt.savefig(directory + '/Bland_Altman_Plot.png')
