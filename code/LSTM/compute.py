@@ -148,7 +148,8 @@ for i, config in enumerate(configs):
         all_test_labels = all_test_labels.view(-1).cpu().numpy()
 
         all_test_inputs = torch.cat(all_test_inputs)
-        all_test_inputs = all_test_inputs.reshape(all_test_inputs.shape[0],-1).cpu().numpy()
+        all_test_inputs = all_test_inputs.cpu().numpy()
+        all_test_inputs = all_test_inputs.transpose(0, 2, 1).reshape(all_test_inputs.shape[0],-1)
 
 
     # データを目視確認ができるようにcsvファイルに出力
