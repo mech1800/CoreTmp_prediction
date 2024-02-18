@@ -77,12 +77,12 @@ for i, config in enumerate(configs):
         train_mae_loss /= len(train_loader)
         train_mre_loss /= len(train_loader)
         all_train_outputs = torch.cat(all_train_outputs)
-        train_std = torch.std(all_train_outputs).item()
+        all_train_labels = torch.cat(all_train_labels)
+
+        train_std = torch.std(all_train_outputs-all_train_labels).item()
         train_mae_2std = train_mae_loss + 2*train_std
 
         all_train_outputs = all_train_outputs.view(-1).cpu().numpy()
-
-        all_train_labels = torch.cat(all_train_labels)
         all_train_labels = all_train_labels.view(-1).cpu().numpy()
 
         all_train_inputs = torch.cat(all_train_inputs)
@@ -109,12 +109,12 @@ for i, config in enumerate(configs):
         val_mae_loss /= len(val_loader)
         val_mre_loss /= len(val_loader)
         all_val_outputs = torch.cat(all_val_outputs)
-        val_std = torch.std(all_val_outputs).item()
+        all_val_labels = torch.cat(all_val_labels)
+
+        val_std = torch.std(all_val_outputs-all_val_labels).item()
         val_mae_2std = val_mae_loss + 2*val_std
 
         all_val_outputs = all_val_outputs.view(-1).cpu().numpy()
-
-        all_val_labels = torch.cat(all_val_labels)
         all_val_labels = all_val_labels.view(-1).cpu().numpy()
 
         all_val_inputs = torch.cat(all_val_inputs)
@@ -140,12 +140,12 @@ for i, config in enumerate(configs):
         test_mae_loss /= len(test_loader)
         test_mre_loss /= len(test_loader)
         all_test_outputs = torch.cat(all_test_outputs)
-        test_std = torch.std(all_test_outputs).item()
+        all_test_labels = torch.cat(all_test_labels)
+
+        test_std = torch.std(all_test_outputs-all_test_labels).item()
         test_mae_2std = test_mae_loss + 2*test_std
 
         all_test_outputs = all_test_outputs.view(-1).cpu().numpy()
-
-        all_test_labels = torch.cat(all_test_labels)
         all_test_labels = all_test_labels.view(-1).cpu().numpy()
 
         all_test_inputs = torch.cat(all_test_inputs)
