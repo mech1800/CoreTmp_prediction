@@ -128,3 +128,19 @@ plt.tight_layout()
 
 # グラフの保存
 plt.savefig("Swarm_Plot.png", dpi=300)
+
+
+# 各モデル×特徴量の出力とラベルを用いてViolin Plotを作成する
+plt.figure(figsize=(30, 15))
+sns.violinplot(x='labels', y='error', data=df, inner=None, palette='light:g')
+
+plt.title('Violin Plot', fontsize=18)
+plt.xlabel('')
+plt.ylabel('')
+plt.ylabel('Error', fontsize=14)
+
+# 余白を削除
+plt.tight_layout()
+
+# グラフの保存
+plt.savefig("Violin_Plot.png", dpi=300)
