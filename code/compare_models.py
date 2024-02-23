@@ -2,6 +2,8 @@ import os
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 
 # ディレクトリ名
 directory1_paths = ['LightGBM/',
@@ -19,13 +21,13 @@ directory2_paths = ['all_sequence/single_feature/',
                     '10_sequence/normalized_single_feature/',
                     '10_sequence/normalized_multi_feature/']
 
-# モデルの数と仮の出力データ
+
+# 各モデル×特徴量のmaeとstdからエラーバーを作成
 model_mae = []
 model_std = []
 models = []
 count = 0
 
-# 各モデル×特徴量のmaeとstdを取得する
 for directory1_path in directory1_paths:
     for directory2_path in directory2_paths:
 
@@ -73,3 +75,72 @@ plt.tight_layout()
 
 # グラフの保存
 plt.savefig("MAE_with_2SD.png", dpi=300)
+
+
+# 各モデル×特徴量の出力とラベルを用いてSworm Plotを作成する
+error = []
+models = []
+count = 0
+
+for directory1_path in directory1_paths:
+    for directory2_path in directory2_paths:
+
+        # pathが存在しない場合はスキップ
+        directory_path = directory1_path + directory2_path
+        if not os.path.isdir(directory_path):
+            continue
+
+        df = pd.read_csv(directory1_path + directory2_path+'test_data.csv')
+        output = df['output'].values
+        label = df['label'].values
+
+        # errorをリストに追加
+        error.append(output-label)   # [[10,11,9],[1,5,2],...,[10,5,6]] (30,390)
+
+        # model名をリストに追加
+        count += 1
+        models.append('model'+str(count))   # ['model1','model2','model3',...,'model30'] (30)
+
+labels = []
+for i in range(len(models)):
+    for _ in range(len(error[i])):
+        labels.append(models[i])   # ['model1','model1','model1',...,'model30'] (30*390)
+
+flattened_error = []
+for sublist in error:
+    for item in sublist:
+        flattened_error.append(item)   # [10,11,9,1,5,2,...,10,5,6] (30*390)
+
+# DataFrameを作成
+df = pd.DataFrame({'labels': labels, 'error': flattened_error})
+
+# Swarmプロットの作成
+plt.figure(figsize=(30, 15))
+sns.swarmplot(x='labels', y='error', data=df, size=2)
+
+plt.title('Swarm Plot', fontsize=18)
+plt.xlabel('')
+plt.ylabel('')
+plt.ylabel('Error', fontsize=14)
+
+# 余白を削除
+plt.tight_layout()
+
+# グラフの保存
+plt.savefig("Swarm_Plot.png", dpi=300)
+
+
+# 各モデル×特徴量の出力とラベルを用いてViolin Plotを作成する
+plt.figure(figsize=(30, 15))
+sns.violinplot(x='labels', y='error', data=df, inner=None, palette='light:g')
+
+plt.title('Violin Plot', fontsize=18)
+plt.xlabel('')
+plt.ylabel('')
+plt.ylabel('Error', fontsize=14)
+
+# 余白を削除
+plt.tight_layout()
+
+# グラフの保存
+plt.savefig("Violin_Plot.png", dpi=300)
