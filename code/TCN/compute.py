@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
+import pandas as pd
 import pickle
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import json
@@ -62,6 +63,7 @@ for i, config in enumerate(configs):
         train_mre_loss = 0
         all_train_outputs = []
         all_train_labels = []
+        all_train_inputs = []
         for inputs, labels in train_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
@@ -70,16 +72,22 @@ for i, config in enumerate(configs):
             train_mre_loss += torch_mean_relative_error(outputs, labels).item()
             all_train_outputs.append(outputs.detach())
             all_train_labels.append(labels.detach())
+            all_train_inputs.append(inputs)
         train_mse_loss /= len(train_loader)
         train_mae_loss /= len(train_loader)
         train_mre_loss /= len(train_loader)
         all_train_outputs = torch.cat(all_train_outputs)
-        train_std = torch.std(all_train_outputs).item()
+        all_train_labels = torch.cat(all_train_labels)
+
+        train_std = torch.std(all_train_outputs-all_train_labels).item()
         train_mae_2std = train_mae_loss + 2*train_std
 
         all_train_outputs = all_train_outputs.view(-1).cpu().numpy()
-        all_train_labels = torch.cat(all_train_labels)
         all_train_labels = all_train_labels.view(-1).cpu().numpy()
+
+        all_train_inputs = torch.cat(all_train_inputs)
+        number_in_channel = all_train_inputs.shape[2]
+        all_train_inputs = all_train_inputs.reshape(all_train_inputs.shape[0],-1).cpu().numpy()
 
         # 検証
         val_mse_loss = 0
@@ -87,6 +95,7 @@ for i, config in enumerate(configs):
         val_mre_loss = 0
         all_val_outputs = []
         all_val_labels = []
+        all_val_inputs = []
         for inputs, labels in val_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
@@ -95,16 +104,21 @@ for i, config in enumerate(configs):
             val_mre_loss += torch_mean_relative_error(outputs, labels).item()
             all_val_outputs.append(outputs.detach())
             all_val_labels.append(labels.detach())
+            all_val_inputs.append(inputs)
         val_mse_loss /= len(val_loader)
         val_mae_loss /= len(val_loader)
         val_mre_loss /= len(val_loader)
         all_val_outputs = torch.cat(all_val_outputs)
-        val_std = torch.std(all_val_outputs).item()
+        all_val_labels = torch.cat(all_val_labels)
+
+        val_std = torch.std(all_val_outputs-all_val_labels).item()
         val_mae_2std = val_mae_loss + 2*val_std
 
         all_val_outputs = all_val_outputs.view(-1).cpu().numpy()
-        all_val_labels = torch.cat(all_val_labels)
         all_val_labels = all_val_labels.view(-1).cpu().numpy()
+
+        all_val_inputs = torch.cat(all_val_inputs)
+        all_val_inputs = all_val_inputs.reshape(all_val_inputs.shape[0],-1).cpu().numpy()
 
         # テスト
         test_mse_loss = 0
@@ -112,6 +126,7 @@ for i, config in enumerate(configs):
         test_mre_loss = 0
         all_test_outputs = []
         all_test_labels = []
+        all_test_inputs = []
         for inputs, labels in test_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
@@ -120,16 +135,47 @@ for i, config in enumerate(configs):
             test_mre_loss += torch_mean_relative_error(outputs, labels).item()
             all_test_outputs.append(outputs.detach())
             all_test_labels.append(labels.detach())
+            all_test_inputs.append(inputs)
         test_mse_loss /= len(test_loader)
         test_mae_loss /= len(test_loader)
         test_mre_loss /= len(test_loader)
         all_test_outputs = torch.cat(all_test_outputs)
-        test_std = torch.std(all_test_outputs).item()
+        all_test_labels = torch.cat(all_test_labels)
+
+        test_std = torch.std(all_test_outputs-all_test_labels).item()
         test_mae_2std = test_mae_loss + 2*test_std
 
         all_test_outputs = all_test_outputs.view(-1).cpu().numpy()
-        all_test_labels = torch.cat(all_test_labels)
         all_test_labels = all_test_labels.view(-1).cpu().numpy()
+
+        all_test_inputs = torch.cat(all_test_inputs)
+        all_test_inputs = all_test_inputs.reshape(all_test_inputs.shape[0],-1).cpu().numpy()
+
+
+    # データを目視確認ができるようにcsvファイルに出力
+    reshaped_pred = all_train_outputs.reshape(-1, 1)
+    reshaped_core = all_train_labels.reshape(-1, 1)
+    train_data = np.concatenate([all_train_inputs, reshaped_pred, reshaped_core], axis=1)
+    reshaped_pred = all_val_outputs.reshape(-1, 1)
+    reshaped_core = all_val_labels.reshape(-1, 1)
+    val_data = np.concatenate([all_val_inputs, reshaped_pred, reshaped_core], axis=1)
+    reshaped_pred = all_test_outputs.reshape(-1, 1)
+    reshaped_core = all_test_labels.reshape(-1, 1)
+    test_data = np.concatenate([all_test_inputs, reshaped_pred, reshaped_core], axis=1)
+    data = [train_data, val_data, test_data]
+    names = ['/train_data.csv', '/val_data.csv', '/test_data.csv']
+    for j in range(3):
+        channel_count = (data[j].shape[1]-2)//number_in_channel
+        columns = []
+        for k in range(channel_count):
+            columns.append(f'channel_{k + 1}')  # 'channel_X'ラベルを追加
+            columns.extend(['' for _ in range(number_in_channel-1)])  # その後にnumber_in_channel-1つの空白列を追加
+        columns.extend(['output', 'label'])
+
+        df = pd.DataFrame(data[j], columns=columns)
+        csv_file_path = directory + names[j]
+        df.to_csv(csv_file_path, index=True, index_label='No')
+
 
     # 各データセットに対するMSE、MAE、MRE、STDの集計
     performance_metrics = {
@@ -171,7 +217,7 @@ for i, config in enumerate(configs):
     plt.text(np.max(means), mean_diff - 1.96 * std_diff, '-1.96 SD', verticalalignment='bottom', horizontalalignment='right', color='red', fontsize=12)
     plt.xlabel("Mean of Model's prediction and True label", fontsize=14)
     plt.ylabel("Difference between Model's prediction and True label", fontsize=14)
-    plt.title('Bland-Altman-Plot LightGBM×feature'+str(i), fontsize=16)
+    plt.title('Bland-Altman-Plot TCN-'+str(i), fontsize=16)
     plt.grid(True)
 
     plt.savefig(directory + '/Bland_Altman_Plot.png')
