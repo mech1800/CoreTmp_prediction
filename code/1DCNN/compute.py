@@ -61,6 +61,7 @@ for i, config in enumerate(configs):
         train_mse_loss = 0
         train_mae_loss = 0
         train_mre_loss = 0
+        train_error = 0
         all_train_outputs = []
         all_train_labels = []
         all_train_inputs = []
@@ -70,12 +71,14 @@ for i, config in enumerate(configs):
             train_mse_loss += MSE(outputs, labels).item()
             train_mae_loss += MAE(outputs, labels).item()
             train_mre_loss += torch_mean_relative_error(outputs, labels).item()
+            train_error += torch.mean(outputs-labels).item()
             all_train_outputs.append(outputs.detach())
             all_train_labels.append(labels.detach())
             all_train_inputs.append(inputs)
         train_mse_loss /= len(train_loader)
         train_mae_loss /= len(train_loader)
         train_mre_loss /= len(train_loader)
+        train_error /= len(train_loader)
         all_train_outputs = torch.cat(all_train_outputs)
         all_train_labels = torch.cat(all_train_labels)
 
@@ -93,6 +96,7 @@ for i, config in enumerate(configs):
         val_mse_loss = 0
         val_mae_loss = 0
         val_mre_loss = 0
+        val_error = 0
         all_val_outputs = []
         all_val_labels = []
         all_val_inputs = []
@@ -102,12 +106,14 @@ for i, config in enumerate(configs):
             val_mse_loss += MSE(outputs, labels).item()
             val_mae_loss += MAE(outputs, labels).item()
             val_mre_loss += torch_mean_relative_error(outputs, labels).item()
+            val_error += torch.mean(outputs-labels).item()
             all_val_outputs.append(outputs.detach())
             all_val_labels.append(labels.detach())
             all_val_inputs.append(inputs)
         val_mse_loss /= len(val_loader)
         val_mae_loss /= len(val_loader)
         val_mre_loss /= len(val_loader)
+        val_error /= len(val_loader)
         all_val_outputs = torch.cat(all_val_outputs)
         all_val_labels = torch.cat(all_val_labels)
 
@@ -124,6 +130,7 @@ for i, config in enumerate(configs):
         test_mse_loss = 0
         test_mae_loss = 0
         test_mre_loss = 0
+        test_error = 0
         all_test_outputs = []
         all_test_labels = []
         all_test_inputs = []
@@ -133,12 +140,14 @@ for i, config in enumerate(configs):
             test_mse_loss += MSE(outputs, labels).item()
             test_mae_loss += MAE(outputs, labels).item()
             test_mre_loss += torch_mean_relative_error(outputs, labels).item()
+            test_error += torch.mean(outputs-labels).item()
             all_test_outputs.append(outputs.detach())
             all_test_labels.append(labels.detach())
             all_test_inputs.append(inputs)
         test_mse_loss /= len(test_loader)
         test_mae_loss /= len(test_loader)
         test_mre_loss /= len(test_loader)
+        test_error /= len(test_loader)
         all_test_outputs = torch.cat(all_test_outputs)
         all_test_labels = torch.cat(all_test_labels)
 
@@ -177,23 +186,26 @@ for i, config in enumerate(configs):
         df.to_csv(csv_file_path, index=True, index_label='No')
 
 
-    # 各データセットに対するMSE、MAE、MRE、STDの集計
+    # 各データセットに対するMSE、MAE、MRE、Error、STDの集計
     performance_metrics = {
         'Train MSE': train_mse_loss,
         'Train MAE': train_mae_loss,
         'Train MRE': train_mre_loss,
+        'Train Error': train_error,
         'Train STD': train_std,
         'Train MAE+2STD': train_mae_2std,
-        'Val MSE': train_mse_loss,
-        'Val MAE': train_mae_loss,
-        'Val MRE': train_mre_loss,
-        'Val STD': train_std,
-        'Val MAE+2STD': train_mae_2std,
-        'Test MSE': train_mse_loss,
-        'Test MAE': train_mae_loss,
-        'Test MRE': train_mre_loss,
-        'Test STD': train_std,
-        'Test MAE+2STD': train_mae_2std,
+        'Val MSE': val_mse_loss,
+        'Val MAE': val_mae_loss,
+        'Val MRE': val_mre_loss,
+        'Val Error': val_error,
+        'Val STD': val_std,
+        'Val MAE+2STD': val_mae_2std,
+        'Test MSE': test_mse_loss,
+        'Test MAE': test_mae_loss,
+        'Test MRE': test_mre_loss,
+        'Test Error': test_error,
+        'Test STD': test_std,
+        'Test MAE+2STD': test_mae_2std,
     }
 
     # 結果をJSONファイルに書き出す

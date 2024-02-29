@@ -58,23 +58,26 @@ for i, config in enumerate(configs):
         csv_file_path = directory + names[j]
         df.to_csv(csv_file_path, index=True, index_label='No')
 
-    # 各データセットに対するMSE、MAE、MRE、STDの計算
+    # 各データセットに対するMSE、MAE、MRE、Error、STDの計算
     performance_metrics = {
         'Train MSE': mean_squared_error(train_T_core, train_pred),
         'Train MAE': mean_absolute_error(train_T_core, train_pred),
         'Train MRE': mean_relative_error(train_T_core, train_pred),
+        'Train Error': np.mean(train_T_core-train_pred),
         'Train STD': np.std(train_T_core - train_pred),
-        'Train MAE+2STD': mean_absolute_error(train_T_core, train_pred) + 2*np.std(train_T_core - train_pred),
+        'Train Error+2STD': np.mean(train_T_core-train_pred) + 2*np.std(train_T_core - train_pred),
         'Val MSE': mean_squared_error(val_T_core, val_pred),
         'Val MAE': mean_absolute_error(val_T_core, val_pred),
         'Val MRE': mean_relative_error(val_T_core, val_pred),
+        'Val Error': np.mean(val_T_core - val_pred),
         'Val STD': np.std(val_T_core - val_pred),
-        'Val MAE+2STD': mean_absolute_error(val_T_core, val_pred) + 2*np.std(val_T_core - val_pred),
+        'Val Error+2STD': np.mean(val_T_core - val_pred) + 2*np.std(val_T_core - val_pred),
         'Test MSE': mean_squared_error(test_T_core, test_pred),
         'Test MAE': mean_absolute_error(test_T_core, test_pred),
         'Test MRE': mean_relative_error(test_T_core, test_pred),
+        'Test Error': np.mean(test_T_core - test_pred),
         'Test STD': np.std(test_T_core - test_pred),
-        'Test MAE+2STD': mean_absolute_error(test_T_core, test_pred) + 2*np.std(test_T_core - test_pred)
+        'Test Error+2STD': np.mean(test_T_core - test_pred) + 2*np.std(test_T_core - test_pred)
     }
 
     # 結果をJSONファイルに書き出す
