@@ -10,8 +10,10 @@ def mean_relative_error(y_true, y_pred):
     return np.mean(np.abs((y_true - y_pred) / y_true))
 
 # 処理対象のディレクトリ
-configs = [['all_sequence/normalized_single_feature'],
+configs = [['all_sequence/single_feature'],
+           ['all_sequence/normalized_single_feature'],
            ['all_sequence/normalized_multi_feature'],
+           ['10_sequence/single_feature'],
            ['10_sequence/normalized_single_feature'],
            ['10_sequence/normalized_multi_feature']]
 
