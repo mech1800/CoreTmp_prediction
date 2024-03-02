@@ -21,7 +21,6 @@ directory2_paths = ['all_sequence/single_feature/',
                     '10_sequence/multi_feature/',
                     '10_sequence/normalized_multi_feature/']
 
-
 # 各モデル×特徴量のmaeとstdからエラーバーを作成
 model_mae = []
 model_std = []
