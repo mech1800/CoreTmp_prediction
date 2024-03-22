@@ -41,7 +41,7 @@ for directory1_path in directory1_paths:
             data = json.load(file)
 
         # maeとstdをリストに追加する
-        model_mae.append(data["Test MAE"])
+        model_mae.append(data["Test Error"])
         model_std.append(data["Test STD"])
 
         # model名をリストに追加
@@ -60,11 +60,11 @@ for i in range(count):
     plt.vlines(x=i, ymin=model_mae[i] - 2 * model_std[i], ymax=model_mae[i] + 2 * model_std[i], colors='black', lw=1.5)
 
 # タイトルと軸ラベルの設定
-plt.title('Model MAE with 2SD', fontsize=18)
-plt.ylabel('MAE', fontsize=14)
+plt.title('Error with 2SD', fontsize=18)
+plt.ylabel('Error', fontsize=14)
 
 # y軸の範囲を設定
-plt.ylim(-1.5, 2.7)
+plt.ylim(-2.0, 1.5)
 
 # x軸を点線で表示
 plt.axhline(0, linestyle='--', color='gray')  # x軸を点線で描画
@@ -73,7 +73,7 @@ plt.axhline(0, linestyle='--', color='gray')  # x軸を点線で描画
 plt.tight_layout()
 
 # グラフの保存
-plt.savefig("MAE_with_2SD.png", dpi=300)
+plt.savefig("Error_with_2SD.png", dpi=300)
 
 
 # 各モデル×特徴量の出力とラベルを用いてSworm Plotを作成する
