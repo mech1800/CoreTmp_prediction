@@ -7,6 +7,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 import json
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
+from torchviz import make_dot
 
 # 評価関数を定義する
 MSE = nn.MSELoss()
@@ -52,6 +53,20 @@ for i, config in enumerate(configs):
 
     # 機械学習モデルをロード
     model = torch.load(directory + '/best_model.pth')
+
+    '''
+    # torchvizでアーキテクチャ図を可視化 model.to(device)で止める
+    model.to(torch.device("cpu"))
+    x = torch.randn(1,2,181)
+    y = model(x)
+    dot = make_dot(y, params=dict(model.named_parameters()))
+    dot.body.append('dpi=300')
+    dot.format = 'png'
+    dot.render("model_architecture", directory="./", cleanup=True)
+
+    model.to(device)
+    '''
+
     model.eval()
 
 

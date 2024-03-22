@@ -4,6 +4,7 @@ import pickle
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import json
 import matplotlib.pyplot as plt
+import lightgbm as lgb
 
 # mean_relative_errorを定義します。これはscikit-learnには含まれていないため、カスタム関数が必要です。
 def mean_relative_error(y_true, y_pred):
@@ -34,6 +35,12 @@ for i, config in enumerate(configs):
     # 機械学習モデルをロード
     with open(directory + '/best_model.pkl', 'rb') as file:
         model = pickle.load(file)
+
+    '''
+    # 決定木を可視化
+    ax = lgb.plot_tree(model, figsize=(10, 10), tree_index=0, show_info=['split_gain', 'internal_value', 'internal_count','leaf_count'])  # ツリーインデックスや表示する情報を指定
+    plt.savefig("tree_visualization.png", dpi=1000)
+    '''
 
     # 各データセットに対する学習済みモデルの出力
     train_pred = model.predict(train_T_input)
