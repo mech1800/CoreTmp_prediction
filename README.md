@@ -11,6 +11,7 @@
   - `RNN`: RNN系ディープラーニングモデルの入出力に合わせたデータセット形式を作成します。
 
 ## codeディレクトリの主要なファイルの説明
+- `code/ONLY_USING/モデル名.py`: 学習済みのモデルを使用することができます。
 - `code/compare_models.py`: 機械学習モデル、使用したデータセットごとの学習結果の誤差をswarmプロットとして表示して比較する。
 - `code/swarm_plot.png`: swarmプロット。
 - `code/*/train.py`: 複数種類のデータセットについてモデルを学習し、結果を後続ディレクトリに保存します。
@@ -42,8 +43,18 @@
   - 入力データの次元: [データ数, 各データのデータ長, 各データのチャンネル数]
   - 正解ラベルの次元: [データ数, 1]
 
-## 使用方法
+## 特徴量形式の説明
+- `10_seqence`: データ長の前10個のデータを特徴量にする場合。
+- `all_seqence`: データ長の全てのデータを特徴量にする場合。
+- `single_feature`: T_skin、T_senだけ使用する。
+- `multi_feature`: T_skin、T_senに加えて、T_skin-T_sen、T_skin-T_sen の傾き、T_skinの傾き、T_senの傾きも使用する。
+- `normalized_*`: 全ての特徴量を0-1に正規化する。
+
+## 使用方法(モデルの学習〜評価)
 1. `data/*/mk_*_dataset.py` を実行することで、そのモデル(*)用の複数種類のデータセット (`T_inpur.npy`、`T_core.npy`) が作成されます。
 2. `code/*/train.py` を実行することで、複数種類のデータセットを用いたそのモデル(`*`)の学習が行われ、学習、検証、テストデータ (`*_T_input`) および最良モデルの情報 (`best_model.pth`、`best_loss.png`、`best_param.pkl`) が後続ディレクトリに保存されます。
 3. `code/*/compute.py` を実行することで、最良モデルに対するモデルの入出力および正解ラベルデータ (`*_data.csv`)、誤差の評価用のファイル (`Bland_Altman_Plot.png`、`best_model_performance.json`) が後続ディレクトリに保存されます。
 4. `code/compare_models.py` を実行することで、複数の機械学習による学習の誤差を swarm プロット (`swarm_plot.png`) として可視化することができます。
+
+## 使用方法(学習済みモデルの使用)
+code/ONLY_USING/モデル名.pyを実行することでそのモデルの学習済みモデルが実行できます。その際、T_skin、T_senの時系列データ を1次元のnumpy配列として入力する必要があります。
